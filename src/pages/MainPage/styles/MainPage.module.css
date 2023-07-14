@@ -1,0 +1,27 @@
+﻿.MainPage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  max-width: 740px;
+  margin: auto;
+}
+
+.MainPage__title {
+  margin-bottom: 40px;
+}
+
+.MainPage__desc {
+  height: 400px;
+  margin-bottom: 32px;
+  text-wrap: balance;
+  text-align: center;
+}
+
+.MainPage__nav {
+  display: flex;
+  justify-content: space-between;
+}
+
+.MainPage__link {
+}
