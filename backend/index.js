@@ -32,20 +32,29 @@ io.on("connection", (socket) => {
     }
   });
 
-  // Обработчик события создания новой сессии
-  socket.on("createSession", (sessionId, name) => {
-    // Присоединение клиента к комнате сессии
-    socket.join(sessionId, () => {
-      const sessionData = {
-        sessionId: sessionId,
-        data: {},
-        activityName: [name],
-      };
-      // В реальном приложении этот объект данных может быть сохранен в базе данных или другом хранилище.
-      console.log(sessionData);
-      // Отправка идентификатора сессии обратно клиенту
-      socket.emit("sessionCreated", sessionData);
-    });
+  /**
+   * name - name player
+   * total - start bank for the player
+   * inGame - the player drop cards or no
+   * bet - bet the player
+   * dealerChip - the player have dealer chip or no
+   * move - queue move the player or not
+   **/
+  socket.on("createSession", ({ sessionId, name, settings }) => {
+    console.log(settings);
+    socket.join(sessionId);
+    // , () => {
+    //     const sessionData = {
+    //       sessionId: sessionId,
+    //       data: [{ name, total: settings.startBank, inGame: true, bet: 0, dealerChip: true, move: false }],
+    //       settings,
+    //       activityName: [name],
+    //     };
+    //
+    //     console.log(sessionData);
+    //     socket.emit("createSessionAnswer", sessionData);
+    //   }
+    socket.emit("createSessionAnswer", sessionId);
   });
 
   // Обработчик события обновления объекта данных сессии

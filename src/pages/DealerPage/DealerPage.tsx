@@ -14,8 +14,10 @@ export const DealerPage = () => {
   };
 
   const closeModal = () => {
+    const m = modalController;
     setModalController(ModalControllerEnum.none);
-    join();
+    if (m === ModalControllerEnum.firstEntry) join();
+    if (m === ModalControllerEnum.settingRoom) create();
   };
 
   const join = () => {
@@ -25,7 +27,14 @@ export const DealerPage = () => {
     socket.emit("joinSession", { sessionId: DealerSessionId });
     socket.on("joinSessionAnswer", (x) => (join = x));
     if (!join) return setModalController(ModalControllerEnum.settingRoom);
-    const setting = window.localStorage.getItem("setting");
+  };
+
+  const create = () => {
+    const settings = window.localStorage.getItem("settings");
+    const name = window.localStorage.getItem("name");
+    if (settings && name)
+      socket.emit("createSession", { sessionId: DealerSessionId, name, settings: JSON.parse(settings) });
+    socket.on("createSessionAnswer", (x) => console.log(x));
   };
 
   useEffect(() => {
