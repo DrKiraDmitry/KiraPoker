@@ -23,7 +23,6 @@ export const DealerPage = () => {
   const join = () => {
     checkUserName();
     let join = false;
-    socket.connect();
     socket.emit("joinSession", { sessionId: DealerSessionId });
     socket.on("joinSessionAnswer", (x) => (join = x));
     if (!join) return setModalController(ModalControllerEnum.settingRoom);
@@ -34,11 +33,16 @@ export const DealerPage = () => {
     const name = window.localStorage.getItem("name");
     if (settings && name)
       socket.emit("createSession", { sessionId: DealerSessionId, name, settings: JSON.parse(settings) });
-    socket.on("createSessionAnswer", (x) => console.log(x));
+    socket.emit("joinSession", { sessionId: DealerSessionId });
+    socket.on("joinSessionAnswer", (x) => console.log(x));
   };
 
   useEffect(() => {
+    socket.connect();
     join();
+    return () => {
+      socket.disconnect();
+    } 
   }, []);
 
   return (

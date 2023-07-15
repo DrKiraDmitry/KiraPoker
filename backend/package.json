@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "start-tsc": "ts-node src/index.ts",
+    "build": "rimraf dist && tsc -b tsconfig.json && cp -r migrations dist"
   },
   "author": "",
   "license": "ISC",
