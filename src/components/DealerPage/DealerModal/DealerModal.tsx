@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import { FirstEntry } from "./FirstEntry/styles/FirstEntry";
-import { SettingRoom } from "./SettingRoom/styles/FirstEntry";
+import { SettingRoom } from "./SettingRoom/styles/SettingRoom";
 
 export enum ModalControllerEnum {
   none,

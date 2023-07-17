@@ -2,13 +2,13 @@ import React, { FC, useRef } from "react";
 import { Input } from "../../../../UI/Input/Input";
 
 export const SettingRoom: FC<{ onClose: () => void }> = ({ onClose }) => {
-  const blind = useRef(15);
+  const bigBlind = useRef(15);
   const smallBlind = useRef(10);
   const startBank = useRef(1000);
 
   const save = () => {
     const setting = {
-      blind: blind.current,
+      bigBlind: bigBlind.current,
       smallBlind: smallBlind.current,
       startBank: startBank.current,
     };
@@ -20,12 +20,12 @@ export const SettingRoom: FC<{ onClose: () => void }> = ({ onClose }) => {
     <div>
       <div>Команата еще не создана давай настроим её</div>
       <Input
-        value={blind.current}
+        value={bigBlind.current}
         title={"Блайнд"}
         min={15}
         required={true}
         type="number"
-        onChange={(e) => (blind.current = Number(e.target.value))}
+        onChange={(e) => (bigBlind.current = Number(e.target.value))}
       />
       <Input
         value={smallBlind.current}

@@ -8,11 +8,6 @@ export const DealerPage = () => {
   const { DealerSessionId } = useParams();
   const [modalController, setModalController] = useState(ModalControllerEnum.none);
 
-  const checkUserName = () => {
-    const name = window.localStorage.getItem("name");
-    if (!name) return setModalController(ModalControllerEnum.firstEntry);
-  };
-
   const closeModal = () => {
     const m = modalController;
     setModalController(ModalControllerEnum.none);
@@ -21,7 +16,9 @@ export const DealerPage = () => {
   };
 
   const join = () => {
-    checkUserName();
+    const name = window.localStorage.getItem("name");
+    if (!name) return setModalController(ModalControllerEnum.firstEntry);
+
     let join = false;
     socket.emit("joinSession", { sessionId: DealerSessionId });
     socket.on("joinSessionAnswer", (x) => (join = x));
@@ -33,20 +30,18 @@ export const DealerPage = () => {
     const name = window.localStorage.getItem("name");
     if (settings && name)
       socket.emit("createSession", { sessionId: DealerSessionId, name, settings: JSON.parse(settings) });
-    socket.emit("joinSession", { sessionId: DealerSessionId });
+    socket.emit("joinSession", { sessionId: DealerSessionId, name });
     socket.on("joinSessionAnswer", (x) => console.log(x));
   };
 
   useEffect(() => {
     socket.connect();
     join();
-    return () => {
-      socket.disconnect();
-    } 
   }, []);
 
   return (
     <div className={styles.DealerPage}>
+      <button onClick={() => socket.emit("startGame")}>Старт</button>
       <DealerModal modalType={modalController} onClose={() => closeModal()} />
     </div>
   );
