@@ -56,6 +56,7 @@ export class DealerController {
     this.players.forEach((el) => {
       el.inGame = true;
       el.checked = false;
+      el.total = this.startTotalForPlayer;
     });
     this.round++;
 
@@ -68,7 +69,7 @@ export class DealerController {
     this.setBigBlind();
 
     this.whoMoved = this.players[nextPlayer(whoHaveDealerChipIndex + 3, this.players.length)].name;
-    this.whoMovedIndex = whoHaveDealerChipIndex;
+    this.whoMovedIndex = nextPlayer(whoHaveDealerChipIndex + 3, this.players.length);
   }
 
   setSmallBlind() {
@@ -96,6 +97,10 @@ export class DealerController {
     this.players[nextPlayer(this.whoMovedIndex, this.players.length)].checked = true;
   }
 
+  playerFold() {
+    this.players[nextPlayer(this.whoMovedIndex, this.players.length)].inGame = false;
+  }
+
   findNextPlayerMove(): void | any {
     this.whoMovedIndex++;
     const findPlayer = this.players[nextPlayer(this.whoMovedIndex, this.players.length)];
@@ -106,6 +111,11 @@ export class DealerController {
 
   actionCheck() {
     this.playerChecked();
+    this.findNextPlayerMove();
+  }
+
+  actionFold() {
+    this.playerFold();
     this.findNextPlayerMove();
   }
 

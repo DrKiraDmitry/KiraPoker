@@ -10,7 +10,7 @@ export const SettingRoom: FC<{ onClose: () => void }> = ({ onClose }) => {
     const setting = {
       bigBlind: bigBlind.current,
       smallBlind: smallBlind.current,
-      startBank: startBank.current,
+      startTotalForPlayer: startBank.current,
     };
     window.localStorage.setItem("settings", JSON.stringify(setting));
     onClose();

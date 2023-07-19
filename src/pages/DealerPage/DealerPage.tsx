@@ -5,11 +5,13 @@ import { DealerModal, ModalControllerEnum } from "../../components/DealerPage/De
 import { socket } from "../../utils/socketIO";
 import { DealerController } from "../../../backend/src/DealerController";
 import { PlayersContainer } from "../../components/DealerPage/PlayerCard/PlayersContainer/PlayersContainer";
+import { useStore } from "@nanostores/react";
+import { $game, $setStore } from "../../stores/DealerStore";
 
 export const DealerPage = () => {
   const { DealerSessionId } = useParams();
   const [modalController, setModalController] = useState(ModalControllerEnum.none);
-  const [game, setGame] = useState<DealerController | null>(null);
+  const store = useStore($game);
 
   const closeModal = () => {
     const m = modalController;
@@ -39,28 +41,31 @@ export const DealerPage = () => {
 
   useEffect(() => {
     socket.connect();
-    socket.on("gameAnswer", (x) => setGame(x));
+    function gameAnswer(x: DealerController) {
+      $setStore(x);
+    }
+    socket.on("gameAnswer", gameAnswer);
     join();
     return () => {
-      socket.off("gameAnswer", (x) => setGame(x));
+      socket.off("gameAnswer", gameAnswer);
     };
   }, []);
 
   return (
     <div className={styles.DealerPage}>
-      {game && (
+      {store && (
         <>
           <div>
-            Игра под номером: {game.round}
-            Круг: {game.circle}
-            Банк: {game.bank}
-            Ходит: {game.whoMoved}
-            Круг идет: {String(game.thisCircleEnd)}
+            Игра под номером: {store.round}
+            Круг: {store.circle}
+            Банк: {store.bank}
+            Ходит: {store.whoMoved}
+            Круг идет: {String(store.thisCircleEnd)}
           </div>
-          <PlayersContainer move={game.whoMoved} players={game.players} />
+          <PlayersContainer players={store.players} />
         </>
       )}
-      {modalController === ModalControllerEnum.none && !game && (
+      {modalController === ModalControllerEnum.none && !store && (
         <button onClick={() => socket.emit("startGame", { sessionId: DealerSessionId })}>Старт</button>
       )}
       <DealerModal modalType={modalController} onClose={() => closeModal()} />

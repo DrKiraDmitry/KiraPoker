@@ -62,6 +62,20 @@ io.on("connection", (socket) => {
     return socket.emit("gameAnswer", dealer);
   });
 
+  socket.on("actionFold", ({ sessionId, name }) => {
+    const room = io.sockets.adapter.rooms.get(sessionId);
+
+    if (!room) {
+      console.log(`Комната сессии ${sessionId} не существует`);
+      return socket.emit("joinSessionAnswer", false);
+    }
+
+    //@ts-ignore
+    const dealer = room?.sessionData.dealer;
+    dealer.actionFold();
+    return socket.emit("gameAnswer", dealer);
+  });
+
   socket.on("createSession", ({ sessionId, name, settings }) => {
     socket.join(sessionId);
     console.log(`Cоздана комната ${sessionId}`);

@@ -3,9 +3,12 @@ import { Player } from "../../../../../backend/src/player";
 import styles from "./styles/PlayerCard.module.css";
 import { socket } from "../../../../utils/socketIO";
 import { useParams } from "react-router-dom";
+import { useStore } from "@nanostores/react";
+import { $game } from "../../../../stores/DealerStore";
 
-export const PlayerCard: FC<{ player: Player; move: string }> = ({ player, move }) => {
+export const PlayerCard: FC<{ player: Player }> = ({ player }) => {
   const { DealerSessionId } = useParams();
+  const store = useStore($game);
 
   return (
     <div className={styles.PlayerCard}>
@@ -14,10 +17,13 @@ export const PlayerCard: FC<{ player: Player; move: string }> = ({ player, move 
       <div>Ставка: {player.bet}</div>
       <div>Умер: {player.defeat}</div>
       <div>В игре: {player.inGame ? "Да" : "Нет"}</div>
-      {move === player.name && (
+      <div>Проверен: {player.checked ? "Да" : "Нет"}</div>
+      {!store?.thisCircleEnd && store?.whoMoved === player.name && (
         <div className={styles.PlayerCard__bottom}>
-          <button onClick={() => socket.emit("actionCheck", { sessionId: DealerSessionId })}>Чек</button>
-          <button>Сбросить</button>
+          {store.topBetInCircle <= player.bet && (
+            <button onClick={() => socket.emit("actionCheck", { sessionId: DealerSessionId })}>Чек</button>
+          )}
+          <button onClick={() => socket.emit("actionFold", { sessionId: DealerSessionId })}>Сбросить</button>
           <button>Повысить</button>
         </div>
       )}
