@@ -3,10 +3,13 @@ import { useParams } from "react-router-dom";
 import styles from "./styles/DealerPage.module.css";
 import { DealerModal, ModalControllerEnum } from "../../components/DealerPage/DealerModal/DealerModal";
 import { socket } from "../../utils/socketIO";
+import { DealerController } from "../../../backend/src/DealerController";
+import { PlayersContainer } from "../../components/DealerPage/PlayerCard/PlayersContainer/PlayersContainer";
 
 export const DealerPage = () => {
   const { DealerSessionId } = useParams();
   const [modalController, setModalController] = useState(ModalControllerEnum.none);
+  const [game, setGame] = useState<DealerController | null>(null);
 
   const closeModal = () => {
     const m = modalController;
@@ -36,12 +39,30 @@ export const DealerPage = () => {
 
   useEffect(() => {
     socket.connect();
+    socket.on("gameAnswer", (x) => setGame(x));
     join();
+    return () => {
+      socket.off("gameAnswer", (x) => setGame(x));
+    };
   }, []);
 
   return (
     <div className={styles.DealerPage}>
-      <button onClick={() => socket.emit("startGame")}>Старт</button>
+      {game && (
+        <>
+          <div>
+            Игра под номером: {game.round}
+            Круг: {game.circle}
+            Банк: {game.bank}
+            Ходит: {game.whoMoved}
+            Круг идет: {String(game.thisCircleEnd)}
+          </div>
+          <PlayersContainer move={game.whoMoved} players={game.players} />
+        </>
+      )}
+      {modalController === ModalControllerEnum.none && !game && (
+        <button onClick={() => socket.emit("startGame", { sessionId: DealerSessionId })}>Старт</button>
+      )}
       <DealerModal modalType={modalController} onClose={() => closeModal()} />
     </div>
   );

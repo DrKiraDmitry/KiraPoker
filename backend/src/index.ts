@@ -34,6 +34,34 @@ io.on("connection", (socket) => {
     return socket.emit("joinSessionAnswer", dealer);
   });
 
+  socket.on("startGame", ({ sessionId, name }) => {
+    const room = io.sockets.adapter.rooms.get(sessionId);
+
+    if (!room) {
+      console.log(`Комната сессии ${sessionId} не существует`);
+      return socket.emit("joinSessionAnswer", false);
+    }
+
+    //@ts-ignore
+    const dealer = room?.sessionData.dealer;
+    dealer.startRound();
+    return socket.emit("gameAnswer", dealer);
+  });
+
+  socket.on("actionCheck", ({ sessionId, name }) => {
+    const room = io.sockets.adapter.rooms.get(sessionId);
+
+    if (!room) {
+      console.log(`Комната сессии ${sessionId} не существует`);
+      return socket.emit("joinSessionAnswer", false);
+    }
+
+    //@ts-ignore
+    const dealer = room?.sessionData.dealer;
+    dealer.actionCheck();
+    return socket.emit("gameAnswer", dealer);
+  });
+
   socket.on("createSession", ({ sessionId, name, settings }) => {
     socket.join(sessionId);
     console.log(`Cоздана комната ${sessionId}`);
